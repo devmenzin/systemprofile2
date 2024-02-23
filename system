@@ -1,0 +1,30 @@
+# Configurações do Registro
+$regContent = @"
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile]
+"NetworkThrottlingIndex"=dword:0ffffffff
+"SystemResponsiveness"=dword:00000000
+
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"MenuShowDelay"="0"
+"WaitToKillAppTimeout"="5000"
+"HungAppTimeout"="4000"
+"AutoEndTasks"="1"
+"LowLevelHooksTimeout"=dword:00001000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control]
+"WaitToKillServiceTimeout"="2000"
+"@
+
+# Caminho do arquivo .reg temporário
+$regFilePath = [System.IO.Path]::Combine($env:TEMP, 'registry_settings.reg')
+
+# Salva o conteúdo no arquivo .reg
+$regContent | Set-Content -Path $regFilePath -Force
+
+# Executa o arquivo .reg usando regedit.exe
+Start-Process "regedit.exe" -ArgumentList "/s `"$regFilePath`"" -Wait
+
+# Remove o arquivo .reg temporário após a execução
+Remove-Item -Path $regFilePath -Force
